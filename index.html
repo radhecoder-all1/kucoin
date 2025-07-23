@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KuCoin - Cryptocurrency Exchange | Bitcoin Trading Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --primary: #23af91;
+            --primary-dark: #1d957b;
+            --primary-light: #e8f8f5;
+            --text-light: #f8fafc;
+            --text-dark: #0f172a;
+            --bg-dark: #0f172a;
+            --bg-darker: #020617;
+            --bg-light: #ffffff;
+            --bg-lighter: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-700: #334155;
+            --gray-400: #94a3b8;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            --bg-light: #0f172a;
+            --bg-lighter: #1e293b;
+            --text-dark: #f8fafc;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--bg-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle, .header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.3s;
+            will-change: transform;
+        }
+
+        .theme-toggle:hover, .header-icon:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: translateZ(5px);
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            will-change: transform;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateZ(10px);
+            box-shadow: 0 0 15px var(--primary-light);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+            transform: translateZ(10px);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(90deg, var(--primary), #2bc5b4);
+            color: white;
+            border: none;
+            animation: pulse-btn 2s ease-in-out infinite;
+        }
+
+        .btn-gradient:hover {
+            background: linear-gradient(90deg, var(--primary-dark), #23af91);
+            transform: translateZ(10px);
+            box-shadow: 0 0 20px var(--primary-light);
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { box-shadow: 0 0 10px var(--primary-light); }
+            50% { box-shadow: 0 0 20px var(--primary); }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Market Ticker */
+        .market-ticker {
+            background-color: var(--bg-lighter);
+            padding: 10px 0;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .ticker-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            white-space: nowrap;
+            animation: ticker 60s linear infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ticker-label {
+            font-size: 0.85rem;
+            color: var(--gray-700);
+        }
+
+        .ticker-value {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .price-up {
+            color: var(--success);
+        }
+
+        .price-down {
+            color: var(--danger);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f5fdfb 0%, #e8f8f5 100%);
+            border-radius: 16px;
+            margin: 30px 0;
+            overflow: hidden;
+            position: relative;
+            text-align: center;
+            perspective: 1000px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+            transform-style: preserve-3d;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(2deg); }
+            50% { transform: translateY(-10px) rotateX(-2deg); }
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #23af91, #2bc5b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px var(--primary-light), 0 0 20px var(--primary);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px var(--primary-light); }
+            50% { text-shadow: 0 0 20px var(--primary-light), 0 0 30px var(--primary); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: var(--gray-700);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        #hero-3d-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        /* Trading Bot Section */
+        .trading-bot-section {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin: 60px 0;
+            background-color: var(--bg-lighter);
+            border-radius: 16px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trading-bot-bg {
+            position: absolute;
+            right: -100px;
+            top: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(35, 175, 145, 0.1) 0%, rgba(35, 175, 145, 0) 70%);
+            border-radius: 50%;
+            z-index: 1;
+            animation: pulse 10s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.1; }
+            50% { transform: scale(1.2); opacity: 0.2; }
+        }
+
+        .trading-bot-content {
+            flex: 1;
+            z-index: 2;
+        }
+
+        .trading-bot-image {
+            flex: 1;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .trading-bot-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .trading-bot-image img:hover {
+            transform: translateZ(20px) rotateX(5deg);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray-700);
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        /* Markets Section */
+        .markets {
+            margin: 60px 0;
+        }
+
+        .markets-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .markets-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            background-color: var(--bg-lighter);
+            border: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .markets-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-light);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .markets-table th {
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 500;
+            color: var(--gray-700);
+            background-color: var(--bg-lighter);
+        }
+
+        .markets-table td {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .markets-table tr {
+            transition: transform 0.3s ease;
+            will-change: transform;
+        }
+
+        .markets-table tr:hover {
+            background-color: var(--primary-light);
+            transform: translateZ(10px);
+        }
+
+        .coin-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .coin-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .coin-icon.btc {
+            background-color: #f7931a;
+            color: white;
+        }
+
+        .coin-icon.eth {
+            background-color: #627eea;
+            color: white;
+        }
+
+        .coin-name {
+            font-weight: 500;
+        }
+
+        .coin-symbol {
+            color: var(--gray-700);
+            font-size: 0.9rem;
+        }
+
+        .trade-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .trade-btn:hover {
+            background-color: rgba(35, 175, 145, 0.2);
+            transform: translateZ(5px);
+        }
+
+        .mini-chart {
+            width: 100px;
+            height: 40px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 60px 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background-color: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .feature-card:hover {
+            transform: translateZ(20px) rotateX(5deg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: rotate(360deg);
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .feature-desc {
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+
+        /* 3D Trading View Section */
+        .trading-view {
+            background-color: var(--bg-lighter);
+            border-radius: 16px;
+            padding: 60px;
+            margin: 60px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trading-view-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: url('https://images.unsplash.com/photo-1639762681057-408e52192e55?q=80&w=2232&auto=format&fit=crop') center/cover no-repeat;
+            opacity: 0.03;
+            z-index: 1;
+        }
+
+        .trading-view-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .trading-view-image {
+            margin-top: 40px;
+            position: relative;
+            height: 400px;
+        }
+
+        #trading-view-3d-canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        #trading-view-3d-canvas:hover {
+            transform: rotateY(10deg) translateZ(50px);
+        }
+
+        /* CTA Section */
+        .cta {
+            background-color: var(--primary-light);
+            border-radius: 16px;
+            padding: 60px;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-bg {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(35, 175, 145, 0.1) 0%, rgba(35, 175, 145, 0) 70%);
+            border-radius: 50%;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .cta-desc {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: var(--gray-700);
+        }
+
+        .cta-image {
+            margin-top: 30px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .cta-image:hover {
+            transform: translateZ(20px) rotateX(5deg);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--bg-lighter);
+            padding: 60px 0 30px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-grid::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .footer-col-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-link {
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copyright {
+            color: var(--gray-700);
+        }
+
+        .footer-legal-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-700);
+            transition: all 0.2s;
+            transform-style: preserve-3d;
+        }
+
+        .social-link:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateZ(10px) scale(1.2);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 1024px) {
+            .nav-links, .header-actions .btn-outline {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .trading-bot-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .trading-bot-image {
+                margin-top: 30px;
+            }
+
+            #hero-3d-canvas, #trading-view-3d-canvas {
+                display: none; /* Disable heavy 3D on smaller screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .markets-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .hero {
+                padding: 80px 0;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cta, .trading-view {
+                padding: 40px 20px;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .footer-legal-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .feature-card:hover {
+                transform: translateY(-5px); /* Simplified animation for mobile */
+            }
+
+            .btn-gradient:hover, .btn-outline:hover, .trade-btn:hover {
+                transform: scale(1.05); /* Reduced 3D effect */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/KUCOIN.svg/2560px-KUCOIN.svg.png" width="150px" loading="lazy" alt="KuCoin Logo">
+            </div>
+            
+            <nav class="nav-links">
+                <a href="#">Markets</a>
+                <a href="#">Trade</a>
+                <a href="#">Trading Bot</a>
+                <a href="#">Earn</a>
+                <a href="#">Futures</a>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="header-icon" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-icon" aria-label="Language">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <button class="btn btn-outline">Login</button>
+                <button class="btn btn-primary">Sign Up</button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle mobile menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Market Ticker -->
+    <div class="market-ticker">
+        <div class="container">
+            <div class="ticker-container">
+                <div class="ticker-item">
+                    <span class="ticker-label">Market Cap:</span>
+                    <span class="ticker-value">$1.24T</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-label">24h Vol:</span>
+                    <span class="ticker-value">$78.4B</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-label">BTC Dominance:</span>
+                    <span class="ticker-value">40.5%</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-label">BTC:</span>
+                    <span class="ticker-value">$62,345.78</span>
+                    <span class="ticker-value price-up">+2.34%</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-label">ETH:</span>
+                    <span class="ticker-value">$3,421.56</span>
+                    <span class="ticker-value price-down">-1.23%</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-label">KCS:</span>
+                    <span class="ticker-value">$10.67</span>
+                    <span class="ticker-value price-up">+5.12%</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-label">XRP:</span>
+                    <span class="ticker-value">$0.5324</span>
+                    <span class="ticker-value price-up">+0.87%</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-label">SOL:</span>
+                    <span class="ticker-value">$142.67</span>
+                    <span class="ticker-value price-up">+3.45%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <canvas id="hero-3d-canvas"></canvas>
+            <div class="hero-content">
+                <h1 class="hero-title">Unleash Your Financial Future with AI-Powered Crypto Mastery</h1>
+                <p class="hero-subtitle">
+                    Join over 30 million trailblazers revolutionizing wealth creation. Trade Bitcoin, Ethereum, and 700+ cutting-edge cryptocurrencies with ultra-low fees and AI-driven precision tools.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-gradient">Get Started</button>
+                    <button class="btn btn-outline">Trade Now</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Trading Bot Section -->
+        <section class="trading-bot-section" id="trading-bot-section">
+            <div class="trading-bot-bg"></div>
+            <div class="trading-bot-content">
+                <h2 class="section-title">Revolutionary AI Trading Bot: Your 24/7 Profit Engine</h2>
+                <p class="section-subtitle">
+                    Unleash the power of our cutting-edge AI trading bot, tirelessly analyzing market trends 24/7 to execute lightning-fast trades and skyrocket your profits while you rest.
+                </p>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Deep Learning Models</h3>
+                        <p class="feature-desc">
+                            Advanced neural networks that adapt to changing market conditions in real-time, 
+                            identifying patterns invisible to human traders.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <h3 class="feature-title">Predictive Analytics</h3>
+                        <p class="feature-desc">
+                            Forecasts price movements with 85%+ accuracy by analyzing historical patterns, 
+                            on-chain data, and market sentiment.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="feature-title">Advanced Risk Management</h3>
+                        <p class="feature-desc">
+                            Automatically adjusts positions based on volatility, correlation risks, and 
+                            market conditions to protect your capital.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="trading-bot-image">
+                <img src="https://socialcapitalmarkets.net/wp-content/uploads/2024/07/Untitled-design-1.png" alt="High-tech AI trading bot interface with dynamic charts, neural network visuals, and a futuristic robotic arm" loading="lazy" class="trading-bot-image">
+            </div>
+        </section>
+        
+        <!-- Markets Section -->
+        <section class="markets">
+            <div class="markets-header">
+                <h2 class="section-title">Spot Markets</h2>
+                <p class="section-subtitle">AI-Powered Precision: Our algorithms forecast explosive bullish trends for BTC and SOL this week, driven by real-time market sentiment analysis.</p>
+                <div class="markets-tabs">
+                    <button class="tab-btn active">All</button>
+                    <button class="tab-btn">Metaverse</button>
+                    <button class="tab-btn">DeFi</button>
+                    <button class="tab-btn">NFT</button>
+                    <button class="tab-btn">Hot</button>
+                </div>
+            </div>
+            
+            <table class="markets-table">
+                <thead>
+                    <tr>
+                        <th>Pair</th>
+                        <th>Price</th>
+                        <th>24h Change</th>
+                        <th>24h Volume</th>
+                        <th>Chart</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="coin-cell">
+                                <div class="coin-icon btc">
+                                    <i class="fab fa-bitcoin"></i>
+                                </div>
+                                <div>
+                                    <div class="coin-name">Bitcoin</div>
+                                    <div class="coin-symbol">BTC/USDT</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>$62,345.78</td>
+                        <td class="price-up">+2.34%</td>
+                        <td>$28.45B</td>
+                        <td>
+                            <canvas class="mini-chart" width="100" height="40"></canvas>
+                        </td>
+                        <td>
+                            <button class="trade-btn">Trade</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="coin-cell">
+                                <div class="coin-icon eth">
+                                    <i class="fab fa-ethereum"></i>
+                                </div>
+                                <div>
+                                    <div class="coin-name">Ethereum</div>
+                                    <div class="coin-symbol">ETH/USDT</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>$3,421.56</td>
+                        <td class="price-down">-1.23%</td>
+                        <td>$15.80B</td>
+                        <td>
+                            <canvas class="mini-chart" width="100" height="40"></canvas>
+                        </td>
+                        <td>
+                            <button class="trade-btn">Trade</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="coin-cell">
+                                <div class="coin-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div>
+                                    <div class="coin-name">KuCoin Token</div>
+                                    <div class="coin-symbol">KCS/USDT</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>$10.67</td>
+                        <td class="price-up">+5.12%</td>
+                        <td>$345M</td>
+                        <td>
+                            <canvas class="mini-chart" width="100" height="40"></canvas>
+                        </td>
+                        <td>
+                            <button class="trade-btn">Trade</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="coin-cell">
+                                <div class="coin-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div>
+                                    <div class="coin-name">Solana</div>
+                                    <div class="coin-symbol">SOL/USDT</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>$142.67</td>
+                        <td class="price-up">+3.45%</td>
+                        <td>$3.45B</td>
+                        <td>
+                            <canvas class="mini-chart" width="100" height="40"></canvas>
+                        </td>
+                        <td>
+                            <button class="trade-btn">Trade</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="coin-cell">
+                                <div class="coin-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div>
+                                    <div class="coin-name">Ripple</div>
+                                    <div class="coin-symbol">XRP/USDT</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>$0.5324</td>
+                        <td class="price-up">+0.87%</td>
+                        <td>$1.23B</td>
+                        <td>
+                            <canvas class="mini-chart" width="100" height="40"></canvas>
+                        </td>
+                        <td>
+                            <button class="trade-btn">Trade</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <!-- 3D Trading View Section -->
+        <section class="trading-view">
+            <div class="trading-view-bg"></div>
+            <div class="trading-view-content">
+                <h2 class="section-title">Immersive 3D Trading Universe: Redefine Your Market Edge</h2>
+                <p class="section-subtitle">
+                    Step into the future of crypto trading with our revolutionary 3D interface, transforming raw market data into a vivid, actionable masterpiece.
+                </p>
+                <div class="trading-view-image">
+                    <canvas id="trading-view-3d-canvas"></canvas>
+                </div>
+                <button class="btn btn-gradient" style="margin-top: 30px;">Try Demo</button>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="features">
+            <h2 class="section-title">Why KuCoin Dominates the Crypto Universe</h2>
+            <p class="section-subtitle" style="margin: 0 auto 40px;">
+                Experience unmatched security, lightning-fast performance, and a world-class trading platform built for crypto pioneers.
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3 class="feature-title">High Performance</h3>
+                    <p class="feature-desc">
+                        Process 1.4 million orders per second with our high-performance matching engine.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <h3 class="feature-title">Low Fees</h3>
+                    <p class="feature-desc">
+                        0.1% spot trading fee, with discounts available for KCS holders.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Secure Storage</h3>
+                    <p class="feature-desc">
+                        Multi-signature cold wallets and institutional-grade security protocols.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="feature-title">Global Support</h3>
+                    <p class="feature-desc">
+                        Available in 200+ countries with 24/7 multilingual customer support.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="feature-title">700+ Coins</h3>
+                    <p class="feature-desc">
+                        Trade all major cryptocurrencies and discover new gems early.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Mobile App</h3>
+                    <p class="feature-desc">
+                        Trade on the go with our award-winning mobile app for iOS and Android.
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="cta-bg"></div>
+            <h2 class="cta-title">Launch Your Crypto Empire Today</h2>
+            <p class="cta-desc">
+                Join 30 million+ visionaries shaping the future of finance. Sign up with KuCoin now and ignite your wealth-building journey in minutes.
+            </p>
+            <img src="https://via.placeholder.com/600x300" alt="Digital wallet with glowing crypto coins and a global map highlighting cryptocurrency adoption" class="cta-image" loading="lazy">
+            <button class="btn btn-gradient" style="padding: 12px 24px; font-size: 1.1rem;">Sign Up Now</button>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <h3 style="text-align: center; margin-bottom: 40px; color: var(--text-dark);">KuCoin: Powering the Future of Decentralized Wealth</h3>
+            <div class="footer-grid">
+                <div>
+                    <h3 class="footer-col-title">Products</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Spot Trading</a>
+                        <a href="#" class="footer-link">Futures Trading</a>
+                        <a href="#" class="footer-link">Margin Trading</a>
+                        <a href="#" class="footer-link">Trading Bot</a>
+                        <a href="#" class="footer-link">Staking</a>
+                        <a href="#" class="footer-link">Lending</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="footer-col-title">Services</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">API</a>
+                        <a href="#" class="footer-link">Institutional Services</a>
+                        <a href="#" class="footer-link">OTC Trading</a>
+                        <a href="#" class="footer-link">Affiliate Program</a>
+                        <a href="#" class="footer-link">Referral Program</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="footer-col-title">Support</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Help Center</a>
+                        <a href="#" class="footer-link">User Feedback</a>
+                        <a href="#" class="footer-link">Fees</a>
+                        <a href="#" class="footer-link">Status</a>
+                        <a href="#" class="footer-link">Submit a Ticket</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="footer-col-title">Company</h3>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">About Us</a>
+                        <a href="#" class="footer-link">Careers</a>
+                        <a href="#" class="footer-link">Blog</a>
+                        <a href="#" class="footer-link">Press</a>
+                        <a href="#" class="footer-link">Contact Us</a>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="copyright">© 2023 KuCoin. All rights reserved.</div>
+                <div class="footer-legal-links">
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">AML & KYC Policy</a>
+                    <a href="#" class="footer-link">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const header = document.querySelector('header');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            header.classList.toggle('mobile-menu-open');
+        });
+        
+        // Theme Toggle
+        const themeToggle = document.querySelector('.theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Hero 3D Coin
+        const heroCanvas = document.getElementById('hero-3d-canvas');
+        if (heroCanvas && window.innerWidth > 1024) {
+            const heroScene = new THREE.Scene();
+            const heroCamera = new THREE.PerspectiveCamera(75, heroCanvas.clientWidth / heroCanvas.clientHeight, 0.1, 1000);
+            const heroRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true });
+            heroRenderer.setSize(heroCanvas.clientWidth, heroCanvas.clientHeight);
+
+            const geometry = new THREE.TorusGeometry(1, 0.3, 16, 100);
+            const material = new THREE.MeshStandardMaterial({ color: 0x23af91, emissive: 0xe8f8f5 });
+            const coin = new THREE.Mesh(geometry, material);
+            heroScene.add(coin);
+
+            const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+            pointLight.position.set(5, 5, 5);
+            heroScene.add(pointLight);
+
+            heroCamera.position.z = 5;
+
+            function animateHero() {
+                requestAnimationFrame(animateHero);
+                coin.rotation.x += 0.01;
+                coin.rotation.y += 0.01;
+                heroRenderer.render(heroScene, heroCamera);
+            }
+            animateHero();
+        }
+
+        // Trading View 3D Chart
+        const tradingCanvas = document.getElementById('trading-view-3d-canvas');
+        if (tradingCanvas && window.innerWidth > 1024) {
+            const tradingScene = new THREE.Scene();
+            const tradingCamera = new THREE.PerspectiveCamera(75, tradingCanvas.clientWidth / tradingCanvas.clientHeight, 0.1, 1000);
+            const tradingRenderer = new THREE.WebGLRenderer({ canvas: tradingCanvas, alpha: true });
+            tradingRenderer.setSize(tradingCanvas.clientWidth, tradingCanvas.clientHeight);
+
+            const geometry = new THREE.BoxGeometry(0.5, 2, 0.5);
+            const material = new THREE.MeshStandardMaterial({ color: 0x23af91 });
+            const chartBars = [];
+            for (let i = -2; i <= 2; i++) {
+                const bar = new THREE.Mesh(geometry, material);
+                bar.position.x = i * 0.7;
+                bar.position.y = Math.random() * 2;
+                tradingScene.add(bar);
+                chartBars.push(bar);
+            }
+
+            const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+            pointLight.position.set(5, 5, 5);
+            tradingScene.add(pointLight);
+
+            tradingCamera.position.z = 5;
+
+            function animateTrading() {
+                requestAnimationFrame(animateTrading);
+                chartBars.forEach(bar => {
+                    bar.position.y = Math.sin(Date.now() * 0.001 + bar.position.x) * 2;
+                });
+                tradingRenderer.render(tradingScene, tradingCamera);
+            }
+            animateTrading();
+        }
+
+        // Mini-Charts
+        document.querySelectorAll('.mini-chart').forEach((canvas, index) => {
+            new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: ['1', '2', '3', '4', '5'],
+                    datasets: [{
+                        data: [10, 12, 11, 13, 12].map(v => v + (Math.random() * 2 - 1)),
+                        borderColor: index % 2 === 0 ? '#10b981' : '#ef4444',
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        });
+
+        // Simulate real-time price updates
+        function updatePrices() {
+            const priceElements = document.querySelectorAll('.markets-table tbody tr td:nth-child(2)');
+            const changeElements = document.querySelectorAll('.markets-table tbody tr td:nth-child(3)');
+            
+            priceElements.forEach((el, index) => {
+                const currentPrice = parseFloat(el.textContent.replace('$', '').replace(',', ''));
+                const change = (Math.random() * 2 - 1) * (index < 2 ? 0.01 : 0.005);
+                const newPrice = currentPrice * (1 + change);
+                
+                el.textContent = '$' + newPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                
+                const currentChange = parseFloat(changeElements[index].textContent.replace('%', '').replace('+', '').replace('-', ''));
+                const newChange = currentChange + (Math.random() * 0.3 - 0.15);
+                
+                changeElements[index].textContent = (newChange >= 0 ? '+' : '') + newChange.toFixed(2) + '%';
+                changeElements[index].className = newChange >= 0 ? 'price-up' : 'price-down';
+            });
+            
+            const tickerPrices = document.querySelectorAll('.ticker-container .ticker-item:nth-child(n+4) .ticker-value:nth-child(2)');
+            const tickerChanges = document.querySelectorAll('.ticker-container .ticker-item:nth-child(n+4) .ticker-value:nth-child(3)');
+            
+            tickerPrices.forEach((el, index) => {
+                const currentPrice = parseFloat(el.textContent.replace('$', '').replace(',', ''));
+                const change = (Math.random() * 2 - 1) * 0.005;
+                const newPrice = currentPrice * (1 + change);
+                
+                el.textContent = '$' + newPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                
+                const currentChangeText = tickerChanges[index].textContent;
+                const currentChange = parseFloat(currentChangeText.replace('%', '').replace('+', '').replace('-', ''));
+                const newChange = currentChange + (Math.random() * 0.3 - 0.15);
+                
+                tickerChanges[index].textContent = (newChange >= 0 ? '+' : '') + newChange.toFixed(2) + '%';
+                tickerChanges[index].className = 'ticker-value ' + (newChange >= 0 ? 'price-up' : 'price-down');
+            });
+        }
+        
+        setInterval(updatePrices, 3000);
+        
+        // Tab switching
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        // Particles for Trading Bot Section
+        if (window.innerWidth > 1024) {
+            particlesJS('trading-bot-section', {
+                particles: {
+                    number: { value: 50 },
+                    color: { value: '#23af91' },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5 },
+                    size: { value: 3 },
+                    move: { speed: 2, direction: 'random' }
+                },
+                interactivity: {
+                    events: { onhover: { enable: true, mode: 'repulse' } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
